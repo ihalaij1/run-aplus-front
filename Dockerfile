@@ -48,8 +48,12 @@ RUN : \
  && chown -R aplus:nogroup /var/celery \
  && :
 
+WORKDIR /
+RUN git clone https://github.com/wolfcw/libfaketime.git
+WORKDIR /libfaketime/src
+RUN make install
 
 WORKDIR /srv/aplus
 EXPOSE 8000
 EXPOSE 5555
-CMD [ "manage", "runserver", "0.0.0.0:8000" ]
+CMD [ "/bin/sh", "-c", "LD_PRELOAD=/usr/local/lib/faketime/libfaketime.so.1 FAKETIME_NO_CACHE=1 python3 /srv/aplus/manage.py runserver 0.0.0.0:8000" ]
